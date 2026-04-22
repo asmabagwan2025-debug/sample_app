@@ -26,7 +26,6 @@ jobs:
           # Because the Dockerfile uses CMD ["python", "main.py"],
           # the container will run the script and then EXIT immediately.
           docker run --name test-run-container simple-test-app
-          
           # Cleanup
           docker rm test-run-container
 
