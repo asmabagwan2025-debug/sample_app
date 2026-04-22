@@ -1,0 +1,43 @@
+name: FastAPI Docker Build Test
+
+# Trigger the workflow on every push to the main branch
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test-docker:
+    # We use the latest Ubuntu runner provided by GitHub
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out your code so the runner can see the Dockerfile
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # Step 2: Set up Docker Buildx (enables advanced build features)
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Step 3: Build the Docker image
+      # We tag it as 'fastapi-app:test' just for this local build session
+      - name: Build Docker Image
+        run: |
+          docker build -t fastapi-app:test .
+
+      # Step 4: Verify the image was created
+      - name: Verify Image
+        run: |
+          docker images | grep fastapi-app
+
+      # Step 5: Run a quick test to ensure the container starts without crashing
+      # We use -d (detached) to run in background, then stop it immediately
+      - name: Run Container Test
+        run: |
+          docker run -d --name test-container -p 8000:8000 fastapi-app:test
+          sleep 5 # Give it 5 seconds to initialize
+          docker ps | grep test-container
+          docker stop test-container
+          docker rm test-container
