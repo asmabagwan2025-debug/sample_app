@@ -8,7 +8,8 @@ on:
 
 jobs:
   build-and-test-docker:
-    runs-on: kat_testing
+    runs-on: ubuntu-latest
+    # runs-on: kat_testing
 
     steps:
       - name: Checkout Repository
