@@ -1,12 +1,13 @@
-FROM python:3.9-slim
-
+# build stage
+FROM node:18-alpine AS build
 WORKDIR /app
+COPY package.json .
+RUN npm install --production
+COPY . .
 
-COPY requirements.txt .
-
-RUN pip install --no-cache-dir -r requirements.txt
-
-COPY main.py .
-
-# This runs the script and then the container immediately exits
-CMD ["python", "main.py"]
+# runtime stage
+FROM node:18-alpine
+WORKDIR /app
+COPY --from=build /app .
+EXPOSE 3000
+CMD ["node","index.js"]
